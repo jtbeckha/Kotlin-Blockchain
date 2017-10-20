@@ -32,20 +32,37 @@ dependencies {
 */
 
 buildscript {
-    ext.kotlin_version = "1.1.51"
+    ext.kotlin_version = '1.1.51'
+    ext.guava_version = '22.0'
+    ext.ktor_version = '0.4.0'
 }
 
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.1.51"
+    id 'org.jetbrains.kotlin.jvm' version '1.1.51'
 }
 
 repositories {
     mavenCentral()
+    maven { url  'http://dl.bintray.com/kotlin/ktor' }
+    maven { url 'https://dl.bintray.com/kotlin/kotlinx' }
 }
 
 dependencies {
-    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: "$kotlin_version"
-    compile group: 'com.google.guava', name: 'guava', version: '22.0'
+    // Kotlin stdlib
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+
+    // Guava
+    compile "com.google.guava:guava:$guava_version"
+
+    // Ktor
+    compile "org.jetbrains.ktor:ktor-core:$ktor_version"
+    compile "org.jetbrains.ktor:ktor-netty:$ktor_version"
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }
 
 compileKotlin {
