@@ -1,4 +1,4 @@
-package main.kotlin
+package blockchain
 
 import com.google.common.primitives.Longs
 import java.security.MessageDigest
@@ -9,7 +9,7 @@ import javax.xml.bind.DatatypeConverter
  * Created by jtbeckha on 10/20/17.
  */
 class Blockchain(
-//        chain: Array<main.kotlin.Block>, currentTransactions: Array<main.kotlin.Transaction>
+//        chain: Array<blockchain.Block>, currentTransactions: Array<blockchain.Transaction>
 ) {
 
     var chain: Array<Block> = arrayOf()
@@ -21,9 +21,9 @@ class Blockchain(
     }
 
     /**
-     * Creates a new main.kotlin.Block and adds it the chain.
+     * Creates a new blockchain.Block and adds it the chain.
      *
-     * @return The new main.kotlin.Block
+     * @return The new blockchain.Block
      */
     fun newBlock(proof: Long, previousHash: String? = null): Block {
         // FIXME Is there a better way
@@ -40,7 +40,7 @@ class Blockchain(
     }
 
     /**
-     * Creates a new transaction to go into the next mined main.kotlin.Block.
+     * Creates a new transaction to go into the next mined blockchain.Block.
      *
      * @return Index of the block in which this transaction will be contained
      */
@@ -52,7 +52,7 @@ class Blockchain(
     }
 
     /**
-     * Returns the last main.kotlin.Block in the chain.
+     * Returns the last blockchain.Block in the chain.
      */
     fun lastBlock(): Block {
         return chain.last()
@@ -77,7 +77,7 @@ class Blockchain(
 }
 
 /**
- * Creates a SHA-256 hash of a main.kotlin.Block.
+ * Creates a SHA-256 hash of a blockchain.Block.
  *
  * @return SHA-256 digest, formatted as a hex String
  */
