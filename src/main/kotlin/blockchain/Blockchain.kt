@@ -1,24 +1,32 @@
 package blockchain
 
+import FullBlockchainResponse
 import com.google.common.primitives.Longs
+import com.google.gson.Gson
+import org.jetbrains.ktor.client.DefaultHttpClient
+import org.jetbrains.ktor.client.readText
+import org.jetbrains.ktor.http.HttpStatusCode
+import java.net.URI
+import java.net.URL
 import java.security.MessageDigest
 import java.time.Instant
 import javax.xml.bind.DatatypeConverter
-
 /**
  * Created by jtbeckha on 10/20/17.
  */
 class Blockchain {
 
+    val gson = Gson()
+
     var chain: List<Block> = listOf()
     var currentTransactions: List<Transaction> = listOf()
+    var nodes: Set<URI> = setOf()
 
     init {
         // Create the genesis block
         newBlock(100, "1")
     }
-
-    /**
+/**
      * Creates a new blockchain.Block and adds it the chain.
      *
      * @return The new blockchain.Block
@@ -78,10 +86,54 @@ class Blockchain {
 
         return proof
     }
+
+    /**
+     * Add a new node to the list of nodes
+     */
+    fun registerNode(address: String) {
+        nodes = nodes.plus(URI.create(address))
+    }
+
+    /**
+     * This is our Consensus Algorithm, it resolves conflicts by replacing our
+     * chain with the longest one in the network.
+     *
+     * @return True if our chain was replaced, false if not
+     */
+    suspend fun resolveConflicts(): Boolean {
+        val neighbors = nodes
+        var newChain: List<Block>? = null
+
+        // We're only looking for chains longer than ours
+        var maxLength = chain.size
+
+        for (node in neighbors) {
+            val targetUrl = URL(node.toASCIIString() + "/chain")
+            val response = DefaultHttpClient.request(targetUrl)
+            if (response.status == HttpStatusCode.OK) {
+                val otherNodeChain = gson.fromJson<FullBlockchainResponse>(
+                        response.readText(), FullBlockchainResponse::class.java
+                )
+
+                // Check if the other node's chain is longer and valid
+                if (otherNodeChain.length > maxLength && validateChain(otherNodeChain.chain)) {
+                    maxLength = otherNodeChain.length
+                    newChain = otherNodeChain.chain
+                }
+            }
+        }
+
+        if (newChain != null) {
+            chain = newChain
+            return true
+        }
+
+        return false
+    }
 }
 
 /**
- * Creates a SHA-256 hash of a blockchain.Block.
+ * Creates a SHA-256 hash of a Block.
  *
  * @return SHA-256 digest, formatted as a hex String
  */
@@ -103,4 +155,34 @@ fun validateProof(lastProof: Long, proof: Long): Boolean {
     val guessDigestHex = DatatypeConverter.printHexBinary(guessDigest)
 
     return guessDigestHex.startsWith("0000")
+}
+
+/**
+ * Determine if a given blockchain is valid.
+ */
+fun validateChain(chain: List<Block>): Boolean {
+    var previousBlock = chain[0]
+    var currentIndex = 1
+
+    while (currentIndex < chain.size) {
+        var block = chain[currentIndex]
+        print(previousBlock)
+        print(block)
+        print("\n-----------\n")
+
+        // Check that the hash of the block is correct
+        if (block.previousHash != hashBlock(previousBlock)) {
+            return false
+        }
+
+        // Check that the Proof of Work is correct
+        if (!validateProof(previousBlock.proof, block.proof)) {
+            return false
+        }
+
+        previousBlock = block
+        currentIndex++
+    }
+
+    return true
 }
