@@ -8,9 +8,7 @@ import javax.xml.bind.DatatypeConverter
 /**
  * Created by jtbeckha on 10/20/17.
  */
-class Blockchain(
-//        chain: Array<blockchain.Block>, currentTransactions: Array<blockchain.Transaction>
-) {
+class Blockchain {
 
     var chain: Array<Block> = arrayOf()
     var currentTransactions: Array<Transaction> = arrayOf()
