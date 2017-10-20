@@ -1,5 +1,6 @@
 package main.kotlin
 
+import com.google.common.primitives.Longs
 import java.security.MessageDigest
 import java.time.Instant
 import javax.xml.bind.DatatypeConverter
@@ -94,7 +95,8 @@ fun validateProof(lastProof: Long, proof: Long): Boolean {
     val guess = lastProof * proof
 
     val algorithm = MessageDigest.getInstance("SHA-256")
-//    val guessHash = algorithm.digest(guess.toByte())
-    //FIXME
-    return true
+    val guessDigest = algorithm.digest(Longs.toByteArray(guess))
+    val guessDigestHex = DatatypeConverter.printHexBinary(guessDigest)
+
+    return guessDigestHex.startsWith("0000")
 }
