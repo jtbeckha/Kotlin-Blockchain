@@ -58,6 +58,7 @@ dependencies {
     // Ktor
     compile "org.jetbrains.ktor:ktor-core:$ktor_version"
     compile "org.jetbrains.ktor:ktor-netty:$ktor_version"
+    compile "org.jetbrains.ktor:ktor-gson:$ktor_version"
 
     // Logback
     compile "ch.qos.logback:logback-classic:$logback_version"
