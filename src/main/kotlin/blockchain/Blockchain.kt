@@ -10,8 +10,8 @@ import javax.xml.bind.DatatypeConverter
  */
 class Blockchain {
 
-    var chain: Array<Block> = arrayOf()
-    var currentTransactions: Array<Transaction> = arrayOf()
+    var chain: List<Block> = listOf()
+    var currentTransactions: List<Transaction> = listOf()
 
     init {
         // Create the genesis block
@@ -32,7 +32,7 @@ class Blockchain {
                 chain.size + 1L, Instant.now().toEpochMilli(), currentTransactions, proof, actualPreviousHash
         )
 
-        currentTransactions = arrayOf()
+        currentTransactions = listOf()
         chain = chain.plus(newBlock)
         return newBlock
     }
