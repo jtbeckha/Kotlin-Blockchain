@@ -20,7 +20,7 @@ class Blockchain {
 
     var chain: List<Block> = listOf()
     var currentTransactions: List<Transaction> = listOf()
-    var nodes: Set<URI> = setOf()
+    var nodes: Set<URL> = setOf()
 
     init {
         // Create the genesis block
@@ -91,7 +91,7 @@ class Blockchain {
      * Add a new node to the list of nodes
      */
     fun registerNode(address: String) {
-        nodes = nodes.plus(URI.create(address))
+        nodes = nodes.plus(URL(address))
     }
 
     /**
@@ -108,7 +108,7 @@ class Blockchain {
         var maxLength = chain.size
 
         for (node in neighbors) {
-            val targetUrl = URL(node.toASCIIString() + "/chain")
+            val targetUrl = URL(node.toString() + "/chain")
             val response = DefaultHttpClient.request(targetUrl)
             if (response.status == HttpStatusCode.OK) {
                 val otherNodeChain = gson.fromJson<FullBlockchainResponse>(

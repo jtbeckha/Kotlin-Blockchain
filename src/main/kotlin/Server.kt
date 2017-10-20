@@ -16,6 +16,7 @@ import org.jetbrains.ktor.routing.get
 import org.jetbrains.ktor.routing.post
 import org.jetbrains.ktor.routing.routing
 import java.net.URI
+import java.net.URL
 import java.util.*
 
 
@@ -38,7 +39,6 @@ fun main(args: Array<String>) {
         install(GsonSupport) {
             setPrettyPrinting()
         }
-
         routing {
             get("/mine") {
                 // Run the proof of work algorithm to get the next proof
@@ -85,7 +85,7 @@ fun main(args: Array<String>) {
                 // FIXME Is there a better way?
                 call.respond(TextContent(
                         gson.toJson(NodeAddResponse(blockchain.nodes
-                                .map(URI::toASCIIString)
+                                .map(URL::toString)
                                 .toCollection(mutableSetOf<String>()))),
                         ContentType.Application.Json,
                         HttpStatusCode.Created
