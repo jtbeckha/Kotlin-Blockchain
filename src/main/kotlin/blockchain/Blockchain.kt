@@ -37,6 +37,12 @@ class Blockchain {
         return newBlock
     }
 
+    fun newTransaction(transaction: Transaction): Long {
+        currentTransactions = currentTransactions.plus(transaction)
+
+        return lastBlock().index + 1
+    }
+
     /**
      * Creates a new transaction to go into the next mined blockchain.Block.
      *

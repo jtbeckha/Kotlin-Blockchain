@@ -5,6 +5,7 @@ import org.jetbrains.ktor.gson.GsonSupport
 import org.jetbrains.ktor.host.embeddedServer
 import org.jetbrains.ktor.http.ContentType
 import org.jetbrains.ktor.netty.Netty
+import org.jetbrains.ktor.request.receive
 import org.jetbrains.ktor.response.respond
 import org.jetbrains.ktor.response.respondText
 import org.jetbrains.ktor.routing.get
@@ -29,14 +30,14 @@ fun main(args: Array<String>) {
 
         routing {
             get("/mine") {
-                call.respondText("We'll mine a new Block", ContentType.Text.Html)
+                call.respondText("We'll mine a new Block\n", ContentType.Text.Html)
             }
             get("/chain") {
-                val response = BlockchainResponse(blockchain.chain, blockchain.chain.size)
-                call.respond(response)
+                call.respond(BlockchainResponse(blockchain.chain, blockchain.chain.size))
             }
             post("/transactions/new") {
-                call.respondText("We'll add a new transaction")
+                val index = blockchain.newTransaction(call.receive())
+                call.respondText("Transaction will be added to block " + index + "\n", ContentType.Application.Json)
             }
         }
     }.start(wait = true)
