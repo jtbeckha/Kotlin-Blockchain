@@ -15,7 +15,6 @@ import org.jetbrains.ktor.response.respondText
 import org.jetbrains.ktor.routing.get
 import org.jetbrains.ktor.routing.post
 import org.jetbrains.ktor.routing.routing
-import java.net.URI
 import java.net.URL
 import java.util.*
 
@@ -35,7 +34,7 @@ fun main(args: Array<String>) {
     // Initialize the blockchain
     val blockchain = Blockchain()
 
-    embeddedServer(Netty, 8080) {
+    embeddedServer(Netty, 8081) {
         install(GsonSupport) {
             setPrettyPrinting()
         }
@@ -54,7 +53,11 @@ fun main(args: Array<String>) {
                 call.respond(BlockForgedResponse(block))
             }
             get("/chain") {
-                call.respond(FullBlockchainResponse(blockchain.chain, blockchain.chain.size))
+                call.respond(TextContent(
+                        gson.toJson(FullBlockchainResponse(blockchain.chain, blockchain.chain.size)),
+                        ContentType.Application.Json,
+                        HttpStatusCode.OK
+                ))
             }
             get("/nodes/resolve") {
                 val replaced = blockchain.resolveConflicts()
