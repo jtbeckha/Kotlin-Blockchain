@@ -34,7 +34,6 @@ fun main(args: Array<String>) {
     // Initialize the blockchain
     val blockchain = Blockchain()
 
-
     embeddedServer(Netty, 8080) {
         install(GsonSupport) {
             setPrettyPrinting()
@@ -60,7 +59,17 @@ fun main(args: Array<String>) {
             get("/nodes/resolve") {
                 val replaced = blockchain.resolveConflicts()
                 if (replaced) {
-
+                    call.respond(FullBlockchainResponse(
+                            blockchain.chain,
+                            blockchain.chain.size,
+                            "Our chain was replaced"
+                    ))
+                } else {
+                    call.respond(FullBlockchainResponse(
+                            blockchain.chain,
+                            blockchain.chain.size,
+                            "Our chain is authoritative"
+                    ))
                 }
             }
             post("/transactions/new") {
