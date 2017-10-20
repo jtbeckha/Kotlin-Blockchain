@@ -1,5 +1,6 @@
 import blockchain.Block
 import blockchain.Blockchain
+import blockchain.Transaction
 import org.jetbrains.ktor.application.install
 import org.jetbrains.ktor.gson.GsonSupport
 import org.jetbrains.ktor.host.embeddedServer
@@ -14,7 +15,8 @@ import org.jetbrains.ktor.routing.routing
 import java.util.*
 
 
-data class BlockchainResponse(val chain: List<Block>, val length: Int)
+data class FullBlockchainResponse(val chain: List<Block>, val length: Int)
+data class BlockForgedResponse(val message: String = "New Block Forged", val block: Block)
 
 fun main(args: Array<String>) {
     // Generate a globally unique address for this node
@@ -30,10 +32,20 @@ fun main(args: Array<String>) {
 
         routing {
             get("/mine") {
-                call.respondText("We'll mine a new Block\n", ContentType.Text.Html)
+                // Run the proof of work algorithm to get the next proof
+                val proof = blockchain.proofOfWork(blockchain.lastBlock().proof)
+
+                // We receive a reward for finding the proof
+                // The sender is "0" to signify this node has mined a new coin
+                blockchain.newTransaction(Transaction("0", nodeIdentifier, 1))
+
+                // Forge new block by adding it to the chain
+                val block = blockchain.newBlock(proof)
+
+                call.respond(BlockForgedResponse(block = block))
             }
             get("/chain") {
-                call.respond(BlockchainResponse(blockchain.chain, blockchain.chain.size))
+                call.respond(FullBlockchainResponse(blockchain.chain, blockchain.chain.size))
             }
             post("/transactions/new") {
                 val index = blockchain.newTransaction(call.receive())
