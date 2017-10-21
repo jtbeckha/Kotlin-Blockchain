@@ -1,6 +1,3 @@
-import blockchain.Block
-import blockchain.Blockchain
-import blockchain.Transaction
 import org.jetbrains.ktor.application.install
 import org.jetbrains.ktor.gson.GsonSupport
 import org.jetbrains.ktor.host.embeddedServer

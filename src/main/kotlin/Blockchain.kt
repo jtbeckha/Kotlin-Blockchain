@@ -1,6 +1,3 @@
-package blockchain
-
-import FullBlockchainResponse
 import com.google.common.primitives.Longs
 import com.google.gson.Gson
 import org.jetbrains.ktor.client.DefaultHttpClient
@@ -10,6 +7,15 @@ import java.net.URL
 import java.security.MessageDigest
 import java.time.Instant
 import javax.xml.bind.DatatypeConverter
+
+data class Block(
+        val index: Long,
+        val timestamp: Long,
+        val transactions: List<Transaction>,
+        val proof: Long,
+        val previousHash: String
+)
+data class Transaction(val sender: String, val recipient: String, val amount: Int)
 
 class Blockchain {
 
@@ -24,9 +30,9 @@ class Blockchain {
         newBlock(100, "1")
     }
     /**
-     * Creates a new blockchain.Block and adds it the chain.
+     * Creates a new Block and adds it the chain.
      *
-     * @return The new blockchain.Block
+     * @return The new Block
      */
     fun newBlock(proof: Long, previousHash: String? = null): Block {
         // FIXME Is there a better way
@@ -49,7 +55,7 @@ class Blockchain {
     }
 
     /**
-     * Creates a new transaction to go into the next mined blockchain.Block.
+     * Creates a new transaction to go into the next mined Block.
      *
      * @return Index of the block in which this transaction will be contained
      */
@@ -61,7 +67,7 @@ class Blockchain {
     }
 
     /**
-     * Returns the last blockchain.Block in the chain.
+     * Returns the last Block in the chain.
      */
     fun lastBlock(): Block {
         return chain.last()
