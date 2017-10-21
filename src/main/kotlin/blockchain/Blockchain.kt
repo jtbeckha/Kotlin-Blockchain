@@ -6,14 +6,11 @@ import com.google.gson.Gson
 import org.jetbrains.ktor.client.DefaultHttpClient
 import org.jetbrains.ktor.client.readText
 import org.jetbrains.ktor.http.HttpStatusCode
-import java.net.URI
 import java.net.URL
 import java.security.MessageDigest
 import java.time.Instant
 import javax.xml.bind.DatatypeConverter
-/**
- * Created by jtbeckha on 10/20/17.
- */
+
 class Blockchain {
 
     val gson = Gson()
@@ -26,7 +23,7 @@ class Blockchain {
         // Create the genesis block
         newBlock(100, "1")
     }
-/**
+    /**
      * Creates a new blockchain.Block and adds it the chain.
      *
      * @return The new blockchain.Block
