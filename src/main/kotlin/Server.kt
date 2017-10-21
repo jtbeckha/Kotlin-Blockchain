@@ -1,9 +1,7 @@
 import blockchain.Block
 import blockchain.Blockchain
 import blockchain.Transaction
-import com.google.gson.Gson
 import org.jetbrains.ktor.application.install
-import org.jetbrains.ktor.content.TextContent
 import org.jetbrains.ktor.gson.GsonSupport
 import org.jetbrains.ktor.host.embeddedServer
 import org.jetbrains.ktor.http.ContentType
@@ -25,9 +23,8 @@ data class NodeAddResponse(val totalNodes: Set<String>, val message: String = "N
 
 data class NodeAddRequest(val nodes: List<String>)
 
-val gson = Gson()
-
 fun main(args: Array<String>) {
+
     // Generate a globally unique address for this node
     val nodeIdentifier = UUID.randomUUID().toString().replace("-", "")
 
@@ -53,11 +50,8 @@ fun main(args: Array<String>) {
                 call.respond(BlockForgedResponse(block))
             }
             get("/chain") {
-                call.respond(TextContent(
-                        gson.toJson(FullBlockchainResponse(blockchain.chain, blockchain.chain.size)),
-                        ContentType.Application.Json,
-                        HttpStatusCode.OK
-                ))
+                call.response.status(HttpStatusCode.OK)
+                call.respond(FullBlockchainResponse(blockchain.chain, blockchain.chain.size))
             }
             get("/nodes/resolve") {
                 val replaced = blockchain.resolveConflicts()
@@ -85,14 +79,13 @@ fun main(args: Array<String>) {
 
                 for (node in nodes) blockchain.registerNode(node)
 
-                // FIXME Is there a better way?
-                call.respond(TextContent(
-                        gson.toJson(NodeAddResponse(blockchain.nodes
-                                .map(URL::toString)
-                                .toCollection(mutableSetOf<String>()))),
-                        ContentType.Application.Json,
-                        HttpStatusCode.Created
-                ))
+                // Note setting the response code here doesn't actually set it due to a bug in the current version
+                // of ktor, but this should work on a new version once that gets fixed.  For now any responses
+                // that go through gson serialization are overridden to 200 OK
+                call.response.status(HttpStatusCode.Created)
+                call.respond(NodeAddResponse(blockchain.nodes
+                        .map(URL::toString)
+                        .toCollection(mutableSetOf())))
             }
         }
     }.start(wait = true)
