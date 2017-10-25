@@ -1,18 +1,18 @@
-import org.jetbrains.ktor.application.install
-import org.jetbrains.ktor.gson.GsonSupport
-import org.jetbrains.ktor.host.embeddedServer
-import org.jetbrains.ktor.http.ContentType
-import org.jetbrains.ktor.http.HttpStatusCode
-import org.jetbrains.ktor.netty.Netty
-import org.jetbrains.ktor.request.receive
-import org.jetbrains.ktor.response.respond
-import org.jetbrains.ktor.response.respondText
-import org.jetbrains.ktor.routing.get
-import org.jetbrains.ktor.routing.post
-import org.jetbrains.ktor.routing.routing
+import io.ktor.application.install
+import io.ktor.gson.GsonSupport
+import io.ktor.host.embeddedServer
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.netty.Netty
+import io.ktor.pipeline.call
+import io.ktor.request.receive
+import io.ktor.response.respond
+import io.ktor.response.respondText
+import io.ktor.routing.get
+import io.ktor.routing.post
+import io.ktor.routing.routing
 import java.net.URL
 import java.util.*
-
 
 data class FullBlockchainResponse(val chain: List<Block>, val length: Int, val message: String? = null)
 data class BlockForgedResponse(val block: Block, val message: String = "New Block Forged")
@@ -76,9 +76,6 @@ fun main(args: Array<String>) {
 
                 for (node in nodes) blockchain.registerNode(node)
 
-                // Note setting the response code here doesn't actually set it due to a bug in the current version
-                // of ktor, but this should work on a new version once that gets fixed.  For now any responses
-                // that go through gson serialization are overridden to 200 OK
                 call.response.status(HttpStatusCode.Created)
                 call.respond(NodeAddResponse(blockchain.nodes
                         .map(URL::toString)

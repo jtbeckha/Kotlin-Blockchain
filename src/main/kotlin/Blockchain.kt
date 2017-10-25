@@ -1,8 +1,8 @@
 import com.google.common.primitives.Longs
 import com.google.gson.Gson
-import org.jetbrains.ktor.client.DefaultHttpClient
-import org.jetbrains.ktor.client.readText
-import org.jetbrains.ktor.http.HttpStatusCode
+import io.ktor.client.jvm.DefaultHttpClient
+import io.ktor.client.jvm.readText
+import io.ktor.http.HttpStatusCode
 import java.net.URL
 import java.security.MessageDigest
 import java.time.Instant
