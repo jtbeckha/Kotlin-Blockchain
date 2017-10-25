@@ -1,4 +1,6 @@
 import io.ktor.application.install
+import io.ktor.features.ContentNegotiation
+import io.ktor.gson.GsonConverter
 import io.ktor.gson.GsonSupport
 import io.ktor.host.embeddedServer
 import io.ktor.http.ContentType
@@ -29,8 +31,8 @@ fun main(args: Array<String>) {
     val blockchain = Blockchain()
 
     embeddedServer(Netty, 8081) {
-        install(GsonSupport) {
-            setPrettyPrinting()
+        install(ContentNegotiation) {
+            register(ContentType.Application.Json, GsonConverter())
         }
         routing {
             get("/mine") {
